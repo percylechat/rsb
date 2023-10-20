@@ -1,17 +1,13 @@
 import sys
 
 
-def negation_normal_form_debug(str_):
-    standard_notation(str_)
-
-
-def negation_normal_form(str_):
+def negation_normal_form(str_: str) -> str:
     stn = standard_notation(str_)
     # print(stn)
     check = "".join(stn)
     temp = infix_to_nnf(check)
     # nnf = neg_form(check)
-    print(temp)
+    return temp
 
 
 def infix_to_nnf(tokens):
@@ -46,7 +42,6 @@ def infix_to_nnf(tokens):
                 return node
         else:
             return node
-
     # Tokenize the expression
     # tokens = expression.split()
     stack = []
@@ -68,7 +63,7 @@ def infix_to_nnf(tokens):
                 if operator == "!":
                     stack.append(apply_demorgans(["!", sub_expression[0]]))
                 else:
-                    print(sub_expression)
+                    print(operator, sub_expression[0], sub_expression[1])
                     stack.append(
                         apply_demorgans(
                             [operator, sub_expression[0], sub_expression[1]]
@@ -136,7 +131,6 @@ if __name__ == "__main__":
     if len(sys.argv) < 2 or len(sys.argv) > 3:
         print("Please enter 1 string and 'debug' option")
         sys.exit(0)
-    # TODO check
     str_ = sys.argv[1]
     if len(sys.argv) == 3:
         if sys.argv[2] == "debug":
