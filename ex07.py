@@ -4,13 +4,18 @@ from itertools import product
 
 def count_different_letters(input):
     unique_letters = set()
+    i = 0
     for char in reversed(input):
         if char.isalpha():
             unique_letters.add(char)
+            i+= 1
+    if len(input) == i and i != 1:
+        print('Error, invalid string')
+        sys.exit(1)
     return unique_letters
 
 
-def sat(str_):
+def sat(str_: str) -> bool:
     variables = count_different_letters(str_)
     variables = list(variables)
     proper_letters = [*set(variables)]
@@ -73,12 +78,13 @@ def eval_formula(str_):
 
 if __name__ == "__main__":
     if len(sys.argv) < 2 or len(sys.argv) > 3:
-        print("Please enter 1 string and 'debug' option")
+        print("Please enter 1 string or example")
         sys.exit(0)
-    # TODO check
     str_ = sys.argv[1]
-    if len(sys.argv) == 3:
-        if sys.argv[2] == "debug":
-            sat_debug(str_)
+    if str_ == "example":
+        print(sat("AB|"))
+        print(sat("AB&"))
+        print(sat("AA!&"))
+        print(sat("AA^"))
     else:
         print(sat(str_))

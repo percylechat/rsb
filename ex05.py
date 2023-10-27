@@ -3,49 +3,47 @@ import sys
 
 def negation_normal_form(str_: str) -> str:
     stn = standard_notation(str_)
-    # print(stn)
+    print('check sn', stn)
     check = "".join(stn)
+    print('check join', check)
     temp = infix_to_nnf(check)
     # nnf = neg_form(check)
     return temp
 
-
-def infix_to_nnf(tokens):
-    # Helper function to apply De Morgan's Laws
-    def apply_demorgans(node):
-        if node[0] == "&":
+def apply_demorgans(node: list):
+    if node[0] == "&":
+        return [
+            "|",
+            apply_demorgans(["!", node[1]]),
+            apply_demorgans(["!", node[2]]),
+        ]
+    elif node[0] == "|":
+        return [
+            "&",
+            apply_demorgans(["!", node[1]]),
+            apply_demorgans(["!", node[2]]),
+        ]
+    elif node[0] == "!":
+        if node[1][0] == "&":
             return [
                 "|",
-                apply_demorgans(["!", node[1]]),
-                apply_demorgans(["!", node[2]]),
+                apply_demorgans(["!", node[1][1]]),
+                apply_demorgans(["!", node[1][2]]),
             ]
-        elif node[0] == "|":
+        elif node[1][0] == "|":
             return [
                 "&",
-                apply_demorgans(["!", node[1]]),
-                apply_demorgans(["!", node[2]]),
+                apply_demorgans(["!", node[1][1]]),
+                apply_demorgans(["!", node[1][2]]),
             ]
-        elif node[0] == "!":
-            if node[1][0] == "&":
-                return [
-                    "|",
-                    apply_demorgans(["!", node[1][1]]),
-                    apply_demorgans(["!", node[1][2]]),
-                ]
-            elif node[1][0] == "|":
-                return [
-                    "&",
-                    apply_demorgans(["!", node[1][1]]),
-                    apply_demorgans(["!", node[1][2]]),
-                ]
-            else:
-                return node
         else:
             return node
-    # Tokenize the expression
-    # tokens = expression.split()
+    else:
+        return node
+
+def infix_to_nnf(tokens):
+    # Applique De Morgan's Laws (doubleneg and stuff)
     stack = []
-    print(tokens)
     for token in tokens:
         if token != ")":  # Tant que avant ou dans parenthese
             stack.append(token)
@@ -53,16 +51,18 @@ def infix_to_nnf(tokens):
             sub_expression = []
             while stack and stack[-1] != "(":
                 sub_expression.append(stack.pop())
-            stack.pop()  # Pop the '('
+            stack.pop()  # enleve '('
             sub_expression.reverse()
-            if len(sub_expression) == 1:  # Handle single variable or NOT
+            if len(sub_expression) == 1:  # gere variable unique ou neg
                 stack.append(sub_expression[0])
             else:
-                print(sub_expression)
-                operator = sub_expression.pop(1)
-                if operator == "!":
-                    stack.append(apply_demorgans(["!", sub_expression[0]]))
+                print('check1', sub_expression)
+                #operator = sub_expression.pop(1)
+                print('check2', sub_expression)
+                if sub_expression[0] == "!":
+                    stack.append(apply_demorgans(["!", sub_expression[1]]))
                 else:
+                    operator = sub_expression.pop(1)
                     print(operator, sub_expression[0], sub_expression[1])
                     stack.append(
                         apply_demorgans(
@@ -76,6 +76,8 @@ def infix_to_nnf(tokens):
 
 
 def standard_notation(str_):
+    #converts RPN into standard notation ie simplify and 
+    #puts parenthesis and ! before formula
     stack = []
     for elem in str_:
         if elem.isalpha():
@@ -128,12 +130,8 @@ def standard_notation(str_):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2 or len(sys.argv) > 3:
-        print("Please enter 1 string and 'debug' option")
+    if len(sys.argv) != 2:
+        print("Please enter 1 string. beware with exclamation point")
         sys.exit(0)
     str_ = sys.argv[1]
-    if len(sys.argv) == 3:
-        if sys.argv[2] == "debug":
-            negation_normal_form_debug(str_)
-    else:
-        negation_normal_form(str_)
+    negation_normal_form(str_)

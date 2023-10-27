@@ -14,17 +14,12 @@ def powerset_gen(s):
     if not s:
         return [
             []
-        ]  # The power set of an empty set is a set containing only the empty set.
-
-    element = s.pop()  # Choose an element from the set.
+        ] 
+    element = s.pop()
     subsets = powerset_gen(
         s
-    )  # Recursively find the power set of the remaining elements.
-
-    # For each subset in the current power set, add a new subset that includes the chosen element.
+    ) 
     new_subsets = [subset + [element] for subset in subsets]
-
-    # Combine the current power set with the new subsets.
     return subsets + new_subsets
 
 
